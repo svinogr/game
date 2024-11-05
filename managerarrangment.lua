@@ -1,7 +1,9 @@
 ManagerArrangment = Object:extend()
 require "manager_knuckles"
+require "buttons/resetButton"
 
-function ManagerArrangment:new(managerKnucle, deckSize)
+function ManagerArrangment:new(managerKnucle, deckSize, resetButton)
+  self.resetButton = resetButton
   self.managerKnucle           = managerKnucle
   self.decksize                = deckSize
 
@@ -30,18 +32,14 @@ function ManagerArrangment:setPositionFor(knucle, x, y)
   knucle.y = y
 end
 
-function ManagerArrangment:activeObject(x, y)
+function ManagerArrangment:clickButton1(x, y)
   -- когда будут известны все зоны можно искать только в элеметах этой зоны
   local deck = self.managerKnucle:getHandDeck()
   for i = 1, #deck do
-    if (x > deck[i].x and x < deck[i].x + deck[i].width) 
-     and ( y > deck[i].y and y < deck[i].y + deck[i].height) then
-      deck[i]:select()
-     end
-
+    if(deck[i]:isMouseOver(x, y)) then
+       deck[i]:select()
+    end
   end
-
-
 end
 
 function ManagerArrangment:firstDealing(dt)
@@ -73,7 +71,19 @@ function ManagerArrangment:firstDealing(dt)
   end
 end
 
+function ManagerArrangment:draw()
+  self:drawButton()
+  self:drawHandDeck()
+  self:drawBacksideDeck()
+end
+
+function ManagerArrangment:drawButton()
+  self.resetButton:draw()
+end
+
 function ManagerArrangment:drawHandDeck()
+  love.graphics.setColor(255/255, 145/255, 43/255)
+  love.graphics.rectangle("fill", 180, 495, 810, 100)
   --отрисовываем руку
   for i = 1, #self.managerKnucle:getHandDeck() do
     self.managerKnucle:getHandDeck()[i]:draw(DefaultColorKnucle)
@@ -113,7 +123,6 @@ function ManagerArrangment:calculatePositionsForHandDeck(qauntity)
     self.handsPositions.y[i] = curentPosy
     print( self.handsPositions.x[i])
     print( self.handsPositions.y[i])
-    curentPosx = curentPosx + sizeKnucles[1] + distance
-    
+    curentPosx = curentPosx + sizeKnucles[1] + distance  
   end
 end

@@ -1,5 +1,5 @@
 BackSide = Object:extend()
-DefaultColorBackside = {78/255, 50/255, 164/255}
+DefaultColorBackside = {57/255, 98/255, 218/255}
 function BackSide:new(width, height)
 --self.x = 100
 --self.y = 500

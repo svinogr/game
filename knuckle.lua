@@ -21,13 +21,25 @@ end
 function Knuckle:select()
     print("selcet") 
     if  not self.isSelect then
-        self.y = self.y - 10 
+        self.y = self.y - 20
         self.isSelect = true
     else
         self.y = 500
         self.isSelect = false
      end
 end
+
+function Knuckle:isMouseOver(mx, my)
+    return mx >= self.x and mx <= self.x + self.width and my >= self.y and my <= self.y + self.height
+end
+
+function Knuckle:mousepressed(mx, my, button)
+    if button == 1 and self:isMouseOver(mx, my) then
+        self:select()
+    end
+end
+
+
 
 function Knuckle:draw(color)
 love.graphics.setColor(color[1], color[2], color[3])
