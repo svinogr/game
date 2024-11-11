@@ -2,19 +2,21 @@ ManagerArrangment = Object:extend()
 require "manager_knuckles"
 require "managerButtons"
 
-function ManagerArrangment:new(deckSize)
+function ManagerArrangment:new(deckSize, mB, mk)
   self.decksize                = deckSize
  
-  local mb =  ManagerButtons()
-  self.managerButtons         = mb
- 
-  local mk = ManagerKnuckles()
-  mk:initialize()
-  self.managerKnucle           = mk
+  self.managerButtons =  mB
+
+  self.managerKnucle = mk
+
+  self.isDealing = true
 
   self.handsPositions          = {}
   self.handsPositions.x        = {}
   self.handsPositions.y        = {}
+  
+  self.resetPositions = {10, 350}
+
   --self.handsPositions.step     = 70
   -- размер поля для розданых карт
   self.placeHandDeck           = {}
@@ -33,9 +35,18 @@ function ManagerArrangment:new(deckSize)
   self.placeButtons.fon.starty = 495
   self.placeButtons.fon.lenght = 100
   self.placeButtons.fon.height = 150
+  self.placeButtons.resetButton = {700, 500}
+  self.placeButtons.steButton = {700, 550}
 
-  self.speed                   = 1
-  self.move                    = true
+  self.placeTable = {}
+  self.placeTable.fon = {}
+  self.placeTable.fon.startx = 150
+  self.placeTable.fon.starty = 150
+  self.placeTable.fon.lenght = deckSize * 90 + 20
+  self.placeTable.fon.height = 300
+  self.placeTable.startx = 170+ 20
+  self.placeTable.starty = 335
+
   self.paddingLeftX            = 10
   self.placeBackSideDeck       = {}
   self.placeBackSideDeck.x     = 10
@@ -49,35 +60,36 @@ function ManagerArrangment:setPositionFor(knucle, x, y)
   knucle.y = y
 end
 
-function ManagerArrangment:clickButton1(x, y)
-  -- когда будут известны все зоны можно искать только в элеметах этой зоны
-  
-  if self:isPlaceButtons(x, y) then
-    self.managerButtons:clickButton(x, y, 1)
-    do return end
-  end
+function ManagerArrangment:showResetKnucles(knucle)
 
-  if self:isPlaceDeckHand(x, y) then
-    -- переписать как выше через менеджер
-    local deck = self.managerKnucle:getHandDeck()
+   self:setPositionFor(knucle, 0, 0)
+
+end
+
+function ManagerArrangment:showSelectedKnucles(x, y)
+  local deck = self.managerKnucle.handDeck
     for i = 1, #deck do
       if (deck[i]:isMouseOver(x, y)) then
         deck[i]:select()
             end
     end
-    do return end
-  end 
-  
- 
 end
 
-function ManagerArrangment:isPlaceButtons(x, y)
-  print("isPlaceButtons")
-  return x > self.placeButtons.fon.startx and y > self.placeButtons.fon.starty 
-  and x < self.placeButtons.fon.startx + self.placeButtons.fon.lenght
-  and y < self.placeButtons.fon.starty + self.placeButtons.fon.height 
-  
+
+function ManagerArrangment:isPlaceResetButtons(x, y)
+  print("isPlaceResetButtons")
+  return x > self.placeButtons.resetButton[1]  and y > self.placeButtons.resetButton[2] 
+  and x < self.placeButtons.resetButton[1]  + SizeResetButton[1]
+  and y < self.placeButtons.resetButton[2] + SizeResetButton[2]
 end
+
+function ManagerArrangment:isPlaceSteButtons(x, y)
+  print("SteButtonseButton")
+  return x > self.placeButtons.steButton[1]  and y > self.placeButtons.steButton[2] 
+  and x < self.placeButtons.steButton[1]  + SizeStepButton[1]
+  and y < self.placeButtons.steButton[2] + SizeStepButton[2]
+end
+
 
 function ManagerArrangment:isPlaceDeckHand(x, y)
   print("isPlaceDeckHand")
@@ -86,49 +98,61 @@ function ManagerArrangment:isPlaceDeckHand(x, y)
             and y < self.placeHandDeck.fon.starty + self.placeHandDeck.fon.height 
 end
 
+function ManagerArrangment:moveKnucleToResetPosition(speed, knucle)
+ -- for i = 1, #self.managerArrangment.handsPositions.x do
+   --  local isMoove = nil
+    if knucle.isMove then
+      local dx = self.resetPositions[1] - knucle.x
+      local dy = self.resetPositions[2] - knucle.y
 
-
-function ManagerArrangment:firstDealing(dt)
-  local hand = self.managerKnucle:getHandDeck()
-  if #hand ~= self.decksize then
-    print("не совпадают размеры колоды и руки")
-  end
-
-  if (self.move) then
-    for i = 1, #self.handsPositions.x do
-      if hand[i].isMove then
-        local dx = self.handsPositions.x[i] - hand[i].x
-        local dy = self.handsPositions.y[i] - hand[i].y
-
-        if math.abs(dx) < 1 and math.abs(dy) < 1 then
-          hand[i].isMove = false
-        else
-          local speed = 200 * dt
-          hand[i].x = hand[i].x + math.max(-speed, math.min(speed, dx))
-          hand[i].y = hand[i].y + math.max(-speed, math.min(speed, dy))
-
-          -- Увеличиваем угол вращения
-          -- card.angle = card.angle + 5 * dt -- Измените 5 на любое значение для изменения скорости вращения
-        end
+      if math.abs(dx) < 1 and math.abs(dy) < 1 then
+       -- knucle.isMove = false
+        --self.isFirstDealing = self.isFirstDealing + 1
+        --isMoove = false
+        knucle.isSelect = false
+      else
+        --local speed = self.speed * dt
+        knucle.x = knucle.x + math.max(-speed , math.min(speed , dx))
+        knucle.y =knucle.y + math.max(-speed, math.min(speed , dy))
+        knucle.isSelect =  true
+        -- Увеличиваем угол вращения
+        -- card.angle = card.angle + 5 * dt -- Измените 5 на любое значение для изменения скорости вращения
       end
     end
-  end
+ -- end
+ --return isMoove
+  
 end
 
+
+
+-- DRAW
 function ManagerArrangment:draw()
+  self:drawTable()
   self:drawButtons()
   self:drawHandDeck()
   self:drawBacksideDeck()
 end
+
+function ManagerArrangment:drawTable()
+  love.graphics.setColor(255 / 255, 145 / 255, 43 / 255)
+
+  love.graphics.rectangle("fill", 
+  self.placeTable.fon.startx,self.placeTable.fon.starty,self.placeTable.fon.lenght,self.placeTable.fon.height)
+  love.graphics.setColor(0, 0, 0)
+  love.graphics.circle("fill",self.placeTable.startx, self.placeTable.starty, 2)
+
+end
+
 
 function ManagerArrangment:drawButtons()
   love.graphics.setColor(255 / 255, 145 / 255, 43 / 255)
   love.graphics.rectangle("fill", self.placeButtons.fon.startx, self.placeButtons.fon.starty, self.placeButtons.fon.lenght, self.placeButtons.fon.height)
   local res = self.managerButtons:getResetButton()
   local ste = self.managerButtons:getStepButton()
-  self:setPositionFor(res, 700, 500)
+  self:setPositionFor(res, self.placeButtons.resetButton[1], self.placeButtons.resetButton[2])
   res:draw()
-  self:setPositionFor(ste, 700, 550)
+  self:setPositionFor(ste, self.placeButtons.steButton[1], self.placeButtons.steButton[2])
   ste:draw()
 end
 
@@ -138,20 +162,29 @@ function ManagerArrangment:drawHandDeck()
   love.graphics.rectangle("fill", 
   self.placeHandDeck.fon.startx,self.placeHandDeck.fon.starty,self.placeHandDeck.fon.lenght,self.placeHandDeck.fon.height)
   --отрисовываем руку
-  for i = 1, #self.managerKnucle:getHandDeck() do
-    self.managerKnucle:getHandDeck()[i]:draw(DefaultColorKnucle)
+  for i = 1, #self.managerKnucle.handDeck do
+    self.managerKnucle.handDeck[i]:draw(DefaultColorKnucle)
   end
 end
 
 function ManagerArrangment:drawBacksideDeck()
-  --if not self.backsideIsDraw then
+  -- раздаточная обратная сторона
   local bs = self.managerKnucle:getBackside()
   print(bs == nil)
   self:setPositionFor(bs, self.placeBackSideDeck.x, self.placeBackSideDeck.y)
   bs:draw(DefaultColorBackside)
   self.backsideIsDraw = true
-  -- end
+  -- сброс обратная сторона
+  local bs = self.managerKnucle:getBackside()
+  print(bs == nil)
+  self:setPositionFor(bs, self.resetPositions[1], self.resetPositions[2])
+  bs:draw(DefaultColorBackside)
+  self.backsideIsDraw = true
+
 end
+
+--DRAW
+
 
 function ManagerArrangment:initialize()
   print("ManagerArrangment init")

@@ -7,10 +7,11 @@ local width, height = 800, 600 -- Ширина и высота окна
 local backgroundCanvas          -- Canvas для фона
 function love.load()
     Object = require "classic"
-    require "managerarrangment"
-    require "manager_knuckles"
-    require "backside"
-    require "managerButtons"
+    -- require "managerarrangment"
+    -- require "manager_knuckles"
+    -- require "backside"
+    -- require "managerButtons"
+    require "game_manager"
 
     love.window.setTitle("Domino")
     love.window.setMode(width, height)
@@ -33,14 +34,13 @@ function love.load()
   --  local mk = ManagerKnuckles()
    -- local mb = ManagerButtons()
    -- mk:initialize()
-    managerArrangment = ManagerArrangment(5)
-    managerArrangment:initialize()
-    x = 0
+      Gm = GameManager()
 end
 
 function love.update(dt)
-    x = x + 5 * dt
-    managerArrangment:firstDealing(dt)
+    --   x = x + 5 * dt
+       Gm:update(dt)
+       
 end
 
 function love.draw()
@@ -48,12 +48,12 @@ function love.draw()
     love.graphics.draw(backgroundCanvas, 0, 0)
     -- Рисуем игровое поле
 
-   managerArrangment:draw()
+    Gm.managerArrangment:draw()
 end
 
 function love.mousepressed(x, y, button)
     if (button == 1) then
         print(x, y)
-        managerArrangment:clickButton1(x, y)
+        Gm:clickButton1(x, y)
     end
 end

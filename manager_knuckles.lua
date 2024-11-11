@@ -1,5 +1,6 @@
 ManagerKnuckles = Object:extend()
 require "knuckle"
+require "backside"
 
 --создает колоду.
 --карты
@@ -56,9 +57,15 @@ function ManagerKnuckles:getBackside()
   return self.bakside
 end
 
-function ManagerKnuckles:getHandDeck()
-  return self.handDeck
+function ManagerKnuckles:getSelectedKnucles()
+  local selected = {}
+  for _, value in ipairs(self.handDeck) do
+    table.insert(selected, value)
+  end
+
+  return selected
 end
+
 
 function ManagerKnuckles:getRandomNumber()
   number = nil
