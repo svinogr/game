@@ -21,7 +21,7 @@ function GameManager:new()
     self.speed = 500
      
     self.resetKnucles = {}
-
+    self.isAdNewKnucles = false
 
 end
 
@@ -29,15 +29,47 @@ function GameManager:update(dt)
     --  добаить признак раздачи и сделать иф
     
     if self.isFirstDealing < 5 then
-        self:firstDealing(dt)
+        self:firstDealing2(dt)
     end
    
-
+--сброс карт 
     if self.resetButon then
         self:resetHandKnucles(dt)
-
     end
+    
+    -- добавление карт после сбороса
+  
+    if self.isAdNewKnucles then
+       self:addNewKnucles(self.managerArrangment.decksize)   
+    end
+
+
 end
+
+function GameManager:addNewKnucles(deksize)
+     self.managerKnucle:addNewKnucles(deksize)
+
+
+
+  
+end
+
+
+function GameManager:firstDealing2(dt)
+
+-- получить свободные позиции для карт
+    local freePositionsForKnucles =  self.managerArrangment.handsPositions
+    for i = 1, #freePositionsForKnucles do
+      print(freePositionsForKnucles[i].isFree)
+      if freePositionsForKnucles[i].isFree
+    end  
+
+-- если есть свободная позиции  то взять карту необходимое количество карт  и поместить на эту позицию
+     
+
+  
+end
+
 
 function GameManager:firstDealing(dt)
     local hand = self.managerKnucle.handDeck
@@ -76,6 +108,7 @@ function GameManager:clickButton1(x, y)
       --  self.managerArrangment:showclickResetButton()
      -- if self.managerArrangment.move >4 then
         self.resetKnucles = self.managerKnucle:getSelectedKnucles()
+   
       --   self.nowResetKnucle = man
          self.resetButon = true
         do return end
@@ -104,6 +137,7 @@ function GameManager:resetHandKnucles(dt)
             print("dwd" , self.resetKnucles [i].x)
             self.resetKnucles [i].isMove = true
              self.managerArrangment:moveKnucleToResetPosition(speed,  self.resetKnucles [i])
+          
            -- handKnucles[i].move = isMove 
            
            --table.insert(resetKnucles, handKnucles[i])
@@ -122,12 +156,16 @@ function GameManager:resetHandKnucles(dt)
        else      
         wasSelect = i
         table.remove(self.resetKnucles, wasSelect)
+      
         break
         end
     end
     
     if #self.resetKnucles == 0 then
         self.resetButon = false
+      
+        self.isAdNewKnucles = true
+      
     end
 
     -- if wasSelect ~= 0 and self.resetKnucles[wasSelect].select == false then

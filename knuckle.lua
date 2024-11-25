@@ -6,6 +6,8 @@ Knuckle = Object:extend()
 function Knuckle:new(width, height, value, radius)
 self.x = 100
 self.y = 500
+self.toPosX = self.x
+self.toPosY = self.y
 self.width = width
 self.height = height
 self.v1 = value[1]

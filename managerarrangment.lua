@@ -14,6 +14,7 @@ function ManagerArrangment:new(deckSize, mB, mk)
   self.handsPositions          = {}
   self.handsPositions.x        = {}
   self.handsPositions.y        = {}
+  self.handsPositions.isFree = {}
   
   self.resetPositions = {10, 350}
 
@@ -60,20 +61,20 @@ function ManagerArrangment:setPositionFor(knucle, x, y)
   knucle.y = y
 end
 
-function ManagerArrangment:showResetKnucles(knucle)
+-- function ManagerArrangment:showResetKnucles(knucle)
 
-   self:setPositionFor(knucle, 0, 0)
+--    self:setPositionFor(knucle, 0, 0)
 
-end
+-- end
 
-function ManagerArrangment:showSelectedKnucles(x, y)
-  local deck = self.managerKnucle.handDeck
-    for i = 1, #deck do
-      if (deck[i]:isMouseOver(x, y)) then
-        deck[i]:select()
-            end
-    end
-end
+-- function ManagerArrangment:showSelectedKnucles(x, y)
+--   local deck = self.managerKnucle.handDeck
+--     for i = 1, #deck do
+--       if (deck[i]:isMouseOver(x, y)) then
+--         deck[i]:select()
+--             end
+--     end
+-- end
 
 
 function ManagerArrangment:isPlaceResetButtons(x, y)
@@ -98,40 +99,40 @@ function ManagerArrangment:isPlaceDeckHand(x, y)
             and y < self.placeHandDeck.fon.starty + self.placeHandDeck.fon.height 
 end
 
-function ManagerArrangment:moveKnucleToResetPosition(speed, knucle)
- -- for i = 1, #self.managerArrangment.handsPositions.x do
-   --  local isMoove = nil
-    if knucle.isMove then
-      local dx = self.resetPositions[1] - knucle.x
-      local dy = self.resetPositions[2] - knucle.y
+-- function ManagerArrangment:moveKnucleToResetPosition(speed, knucle)
+--  -- for i = 1, #self.managerArrangment.handsPositions.x do
+--    --  local isMoove = nil
+--     if knucle.isMove then
+--       local dx = self.resetPositions[1] - knucle.x
+--       local dy = self.resetPositions[2] - knucle.y
 
-      if math.abs(dx) < 1 and math.abs(dy) < 1 then
-       -- knucle.isMove = false
-        --self.isFirstDealing = self.isFirstDealing + 1
-        --isMoove = false
-        knucle.isSelect = false
-      else
-        --local speed = self.speed * dt
-        knucle.x = knucle.x + math.max(-speed , math.min(speed , dx))
-        knucle.y =knucle.y + math.max(-speed, math.min(speed , dy))
-        knucle.isSelect =  true
-        -- Увеличиваем угол вращения
-        -- card.angle = card.angle + 5 * dt -- Измените 5 на любое значение для изменения скорости вращения
-      end
-    end
- -- end
- --return isMoove
+--       if math.abs(dx) < 1 and math.abs(dy) < 1 then
+--        -- knucle.isMove = false
+--         --self.isFirstDealing = self.isFirstDealing + 1
+--         --isMoove = false
+--         knucle.isSelect = false
+--       else
+--         --local speed = self.speed * dt
+--         knucle.x = knucle.x + math.max(-speed , math.min(speed , dx))
+--         knucle.y =knucle.y + math.max(-speed, math.min(speed , dy))
+--         knucle.isSelect =  true
+--         -- Увеличиваем угол вращения
+--         -- card.angle = card.angle + 5 * dt -- Измените 5 на любое значение для изменения скорости вращения
+--       end
+--     end
+--  -- end
+--  --return isMoove
   
-end
+-- end
 
 
 
 -- DRAW
 function ManagerArrangment:draw()
-  self:drawTable()
-  self:drawButtons()
-  self:drawHandDeck()
-  self:drawBacksideDeck()
+  -- self:drawTable()
+  -- self:drawButtons()
+  -- self:drawHandDeck()
+  -- self:drawBacksideDeck()
 end
 
 function ManagerArrangment:drawTable()
@@ -170,13 +171,13 @@ end
 function ManagerArrangment:drawBacksideDeck()
   -- раздаточная обратная сторона
   local bs = self.managerKnucle:getBackside()
-  print(bs == nil)
+ -- print(bs == nil)
   self:setPositionFor(bs, self.placeBackSideDeck.x, self.placeBackSideDeck.y)
   bs:draw(DefaultColorBackside)
   self.backsideIsDraw = true
   -- сброс обратная сторона
   local bs = self.managerKnucle:getBackside()
-  print(bs == nil)
+ -- print(bs == nil)
   self:setPositionFor(bs, self.resetPositions[1], self.resetPositions[2])
   bs:draw(DefaultColorBackside)
   self.backsideIsDraw = true
@@ -191,7 +192,7 @@ function ManagerArrangment:initialize()
   -- расчитываем позиции руки с картами
   self:calculatePositionsForHandDeck(self.decksize)
   -- помещаем случаные карты в руку
-  self.managerKnucle:getKnucles(self.decksize)
+  --self.managerKnucle:getKnucles(self.decksize)
 end
 
 function ManagerArrangment:calculatePositionsForHandDeck(qauntity)
@@ -205,10 +206,10 @@ function ManagerArrangment:calculatePositionsForHandDeck(qauntity)
   local curentPosx = self.placeHandDeck.startPosx
   local curentPosy = self.placeHandDeck.startPosy
   for i = 1, qauntity do
-    self.handsPositions.x[i] = curentPosx
-    self.handsPositions.y[i] = curentPosy
-    print(self.handsPositions.x[i])
-    print(self.handsPositions.y[i])
+    self.handsPositions[i] = { x = curentPosx, y = curentPosy, free = true}
+    --print(self.handsPositions.x[i])
+    --print(self.handsPositions.y[i])
+   -- self.handsPositions[i].isFree = true
     curentPosx = curentPosx + sizeKnucles[1] + distance
   end
 end

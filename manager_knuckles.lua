@@ -17,8 +17,19 @@ self:createDeck()
 self:createBackSide()
 end
 
--- добавляет карты в коколоду
-function ManagerKnuckles:addKnucklesToDeck(knucles)
+-- добавление карт из колоды 
+function ManagerKnuckles:addNewKnucles(deckSize)
+     -- узнаем сколько карт нужно добавить
+    local neededQyantity  = deckSize - #self.handDeck
+     -- получаем карты
+     print(#self.deck)
+     print(#self.handDeck)
+     print(deckSize)
+    self:getKnucles(neededQyantity)
+     -- добавляем в  руку
+     print(#self.deck)
+     print(#self.handDeck)
+
   
 end
 
@@ -32,6 +43,15 @@ function ManagerKnuckles:getKnucles(quantity)
     --print("kn:", kn.v1, kn.v2, 50)       -- Добавьте это для отладки
     self.handDeck[i] = kn
   end
+end
+
+function ManagerKnuckles:removeSelectedKnucleFromHand()
+  for i = #self.handDeck, 1, -1 do
+    if self.handDeck[i].isSelect then
+      table.remove(self.handDeck, i)
+    end
+  end
+  
 end
 
 function ManagerKnuckles:createDeck()
@@ -50,7 +70,7 @@ end
 function ManagerKnuckles:createBackSide()
   print("create backside")
   self.bakside =  BackSide(SizeKnuckle[1], SizeKnuckle[2])
-  print(self.bakside == nil)
+--  print(self.bakside == nil)
 end
 
 function ManagerKnuckles:getBackside()
